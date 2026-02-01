@@ -1,0 +1,91 @@
+{% extends "baselogin.html" %}
+{% block title %}Login / Register{% endblock %}
+
+{% block content %}
+<div id="container" class="sign-in page-wrapper" data-layout="vertical" data-navbarbg="skin6">
+    <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+        <div class="d-flex align-items-center justify-content-center w-100">
+            <div class="row justify-content-center w-100">
+                <div class="col-md-8 col-lg-6 col-xxl-3">
+                    <div class="card mb-0">
+                        <div class="card-body">
+
+                            <!-- Logo -->
+                            <a href="#" class="text-center d-block py-3">
+                                <img src="/assets/images/logos/dark-logo.svg" width="180" alt="">
+                            </a>
+                            <p class="text-center">Your Social Campaigns</p>
+
+                            <!-- LOGIN FORM -->
+                            <div class="form-wrapper sign-in-form">
+                                <form method="post" action="{{ url_for('login_register') }}">
+                                    {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" name="email" id="email" required>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" name="password" id="password" required>
+                                    </div>
+                                    <button type="submit" name="login-submit" class="btn btn-primary w-100 py-2 mb-3">Sign In</button>
+                                    <p class="text-center">
+                                        Don't have an account? 
+                                        <span class="pointer text-primary fw-bold" onclick="toggleForm()">Sign Up</span>
+                                    </p>
+                                </form>
+                            </div>
+
+                            <!-- REGISTER FORM -->
+                            <div class="form-wrapper sign-up-form">
+                                <form method="post" action="{{ url_for('login_register') }}">
+                                    <div class="mb-3">
+                                        <label for="nom" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" name="nom" id="nom" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email2" class="form-label">Email</label>
+                                        <input type="email" class="form-control" name="email" id="email2" required>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="password2" class="form-label">Password</label>
+                                        <input type="password" class="form-control" name="password" id="password2" required>
+                                    </div>
+                                    <button type="submit" name="register-submit" class="btn btn-success w-100 py-2">Create Account</button>
+                                    <p class="text-center">
+                                        Already have an account? 
+                                        <span class="pointer text-primary fw-bold" onclick="toggleForm()">Sign In</span>
+                                    </p>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Cache le formulaire non actif */
+#container .sign-in-form { display: block; }
+#container.sign-up .sign-in-form { display: none; }
+
+#container .sign-up-form { display: none; }
+#container.sign-up .sign-up-form { display: block; }
+
+.pointer { cursor: pointer; text-decoration: underline; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleForm() {
+    document.getElementById('container').classList.toggle('sign-up');
+}
+</script>
+{% endblock %}

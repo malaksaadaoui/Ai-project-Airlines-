@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BI & ML Platform</title>
+
+  <link rel="stylesheet" href="../assets/css/styles.min.css" />
+
+  <style>
+    body {
+      background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+      font-family: Arial, sans-serif;
+    }
+
+    /* Sidebar hover effect */
+    .left-sidebar .sidebar-link:hover,
+    .left-sidebar .sidebar-item.active > .sidebar-link {
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: white !important;
+      border-radius: 12px;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .left-sidebar .sidebar-link:hover i,
+    .left-sidebar .sidebar-item.active > .sidebar-link i {
+      color: white;
+    }
+
+    /* Layout */
+    .page-wrapper {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .body-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+      padding: 20px;
+    }
+
+    .container-fluid {
+      flex: 1;
+      padding: 0;
+    }
+
+    /* Card dashboard */
+    .card-dashboard {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-dashboard h2 {
+      margin-bottom: 20px;
+    }
+
+    /* iframe */
+    .card-dashboard iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
+      border-radius: 8px;
+    }
+
+    /* Admin stat cards */
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    .cards .card {
+      flex: 1 1 150px; /* responsive width */
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="page-wrapper" id="main-wrapper"
+     data-layout="vertical"
+     data-navbarbg="skin6"
+     data-sidebartype="full"
+     data-sidebar-position="fixed"
+     data-header-position="fixed">
+
+  <!-- Sidebar -->
+  <aside class="left-sidebar">
+    <div>
+      <div class="brand-logo d-flex align-items-center justify-content-between">
+        <a href="./index.html" class="text-nowrap logo-img">
+          <img src="../assets/images/logos/dark-logo.svg" width="180" alt="" />
+        </a>
+        <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+          <i class="ti ti-x fs-8"></i>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+        <ul id="sidebarnav">
+          <li class="sidebar-item">
+            <a class="sidebar-link" href="{{ url_for('index') }}" aria-expanded="false">
+              <span><i class="ti ti-layout-dashboard"></i></span>
+              <span class="hide-menu">Home</span>
+            </a>
+          </li>
+
+          <li class="sidebar-item selected">
+            <a class="sidebar-link" href="{{ url_for('admin') }}" aria-expanded="false">
+              <span><i class="ti ti-chart-bar"></i></span>
+              <span class="hide-menu">Dashboard</span>
+            </a>
+          </li>
+
+          <li class="nav-small-cap">
+            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+            <span class="hide-menu">Business Models</span>
+          </li>
+
+          <li class="sidebar-item">
+            <a class="sidebar-link" href="{{ url_for('index') }}" aria-expanded="false">
+              <span><i class="ti ti-users"></i></span>
+              <span class="hide-menu">Customer Insights</span>
+            </a>
+          </li>
+
+          <li class="sidebar-item">
+            <a class="sidebar-link" href="{{ url_for('index') }}" aria-expanded="false">
+              <span><i class="ti ti-airplane"></i></span>
+              <span class="hide-menu">Operations & Maintenance</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="body-wrapper">
+    <div class="container-fluid">
+
+      <!-- Power BI Dashboard -->
+      <div class="card-dashboard">
+        <h2>Business Intelligence Dashboard (Power BI)</h2>
+        <iframe
+          title="airlinePBI"
+          src="https://app.powerbi.com/reportEmbed?reportId=f4145e4d-303f-4999-b70a-5ddde7c1bdd8&autoAuth=true&ctid=604f1a96-cbe8-43f8-abbf-f8eaf5d85730"
+          allowfullscreen="true">
+        </iframe>
+      </div>
+
+      <!-- Admin Stats -->
+      <div class="card-dashboard">
+        <h2>Admin Dashboard</h2>
+        <div class="cards">
+          <div class="card">Total Comments: {{ total_comments }}</div>
+          <div class="card">Positive: {{ positive_comments }}</div>
+          <div class="card">Negative: {{ negative_comments }}</div>
+        </div>
+      </div>
+
+      <!-- Comments by Category Chart -->
+      <div class="card-dashboard">
+        <h2>Customer Pain Points by Category</h2>
+        <canvas id="categoryChart" width="400" height="200"></canvas>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+var ctx = document.getElementById('categoryChart').getContext('2d');
+var chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ categories|tojson }},
+        datasets: [
+            {
+                label: 'Negative Comments',
+                data: {{ negative_counts|tojson }},
+                backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            },
+        ]
+    },
+    options: {
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+</script>
+
+<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/app.min.js"></script>
+
+</body>
+</html>

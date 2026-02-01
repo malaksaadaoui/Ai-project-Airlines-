@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RUL Prediction - ML Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --primary-hover: #0284c7;
+            --primary-light: #bae6fd;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --bg: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            --success-border: #10b981;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 24px;
+            transition: gap 0.3s ease;
+        }
+
+        .back-link:hover {
+            gap: 12px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0 0 12px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.08);
+            padding: 48px;
+            border: 1px solid var(--border);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 30px rgba(14, 165, 233, 0.12);
+        }
+
+        .card-header {
+            margin-bottom: 36px;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            color: var(--text);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-header p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        input::placeholder {
+            color: #cbd5e1;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 40px;
+            padding: 32px;
+            background: var(--success-bg);
+            border-radius: 16px;
+            border-left: 5px solid var(--success-border);
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15);
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .result-icon {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .result h3 {
+            font-size: 1.3rem;
+            color: var(--success-text);
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 2.8rem;
+            color: var(--success-text);
+            font-weight: 700;
+            margin: 16px 0;
+            letter-spacing: -1px;
+        }
+
+        .result-description {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Info Banner */
+        .info-banner {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .info-banner-icon {
+            font-size: 1.3rem;
+            margin-top: 2px;
+        }
+
+        .info-banner p {
+            color: #0c4a6e;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 40px 16px;
+            }
+
+            .card {
+                padding: 28px 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .result-value {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="{{ url_for('index') }}"  class="back-link">
+                ← Back to Home
+            </a>
+            <h1>Flight Cluster Analysis</h1>
+            <p class="subtitle">Identify flight behavior patterns and engine operational states using clustering algorithms</p>
+        </header>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Engine Operational Parameters</h2>
+                <p>Enter flight data to determine the operational cluster classification</p>
+            </div>
+
+            <div class="info-banner">
+                <div class="info-banner-icon">✈️</div>
+                <p>Flight clustering helps identify similar operational patterns, enabling better maintenance scheduling and performance optimization.</p>
+            </div>
+        <form method="post">
+            <input type="hidden" name="form_type" value="engine_cluster">
+
+            <div class="form-grid">
+                {% for f in features %}
+                <div class="form-group">
+                    <label>{{ feature_labels[f] }}</label>
+                    <input type="number" name="{{ f }}" step="any" required>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit">Predict Engine State</button>
+        </form>
+       {% if error_msg %}
+            <div class="error">
+                ⚠️ {{ error_msg }}
+            </div>
+            {% endif %}
+
+            {% if cluster is not none %}
+            <div class="result">
+                <div class="result-header">
+                    <div class="result-icon">✈️</div>
+                    <h3>Cluster Analysis Complete</h3>
+                </div>
+                <div class="result-label">Predicted Cluster</div>
+                <div class="result-cluster">
+                    Cluster {{ cluster }}
+                </div>
+                <div class="result-description">
+                    <strong>Cluster Explanation:</strong><br>
+                    {{ description }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if anchor %}
+    <script>
+        document.getElementById("{{ anchor }}").scrollIntoView({ 
+            behavior: "smooth", 
+            block: "center" 
+        });
+    </script>
+    {% endif %}
+</body>
+</html>
